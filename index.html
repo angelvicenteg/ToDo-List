@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="./style.css" />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
     <div class="container">
@@ -15,20 +16,38 @@
         <i class="fas fa-moon"></i>
       </button>
 
+      <div class="language-switcher">
+        <select id="languageSelector">
+          <option value="en">English</option>
+          <option value="th">ภาษาไทย</option>
+        </select>
+      </div>
+
       <div class="header">
-        <h1>Task</h1>
+        <h1 data-i18n-key="headerTitle">Task</h1>
         <div class="date" id="currentDate">Monday, January 1</div>
       </div>
 
       <div class="task-input">
-        <input type="text" id="taskInput" placeholder="Add a new task..." />
+        <input
+          type="text"
+          id="taskInput"
+          placeholder="Add a new task..."
+          data-i18n-key="taskInputPlaceholder"
+        />
         <button id="addTaskBtn"><i class="fas fa-plus"></i></button>
       </div>
 
       <div class="filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="active">Active</button>
-        <button class="filter-btn" data-filter="completed">Completed</button>
+        <button class="filter-btn active" data-filter="all" data-i18n-key="filterAll">
+          All
+        </button>
+        <button class="filter-btn" data-filter="active" data-i18n-key="filterActive">
+          Active
+        </button>
+        <button class="filter-btn" data-filter="completed" data-i18n-key="filterCompleted">
+          Completed
+        </button>
       </div>
 
       <div class="stats">
@@ -40,18 +59,16 @@
             border: none;
             color: var(--danger);
             cursor: pointer;
-          ">
+          "
+          data-i18n-key="clearCompleted"
+        >
           Clear completed
         </button>
       </div>
 
       <div class="task-list" id="taskList">
         <div class="empty-state">
-          <i class="fas fa-tasks"></i>
-          <p>No tasks yet</p>
-          <p>Add your first task to get started!</p>
-          <button id="addSampleTask">Add Sample Task</button>
-        </div>
+          </div>
       </div>
     </div>
 

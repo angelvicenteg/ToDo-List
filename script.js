@@ -11,16 +11,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const notification = document.getElementById("notification");
   const notificationText = document.getElementById("notificationText");
   const themeToggle = document.getElementById("themeToggle");
+  const languageSelector = document.getElementById("languageSelector");
 
   // State
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
   let currentFilter = "all";
+  let translations = {}; // To store the loaded language file
 
   // Initialize
-  updateDate();
-  renderTasks();
-  updateTaskCount();
-  checkEmptyState();
+  initializeApp();
 
   // Event Listeners
   addTaskBtn.addEventListener("click", addTask);
@@ -34,11 +33,18 @@ document.addEventListener("DOMContentLoaded", function () {
       this.classList.add("active");
       currentFilter = this.dataset.filter;
       renderTasks();
+      updateTaskCount(); // Update count on filter change
     });
   });
 
   clearCompletedBtn.addEventListener("click", clearCompletedTasks);
   themeToggle.addEventListener("click", toggleTheme);
+  languageSelector.addEventListener("change", (e) => {
+    const selectedLang = e.target.value;
+    localStorage.setItem("language", selectedLang);
+    loadTranslations(selectedLang);
+    updateDate(selectedLang);
+  });
 
   // Check for saved theme preference
   if (localStorage.getItem("darkMode") === "enabled") {
@@ -46,22 +52,63 @@ document.addEventListener("DOMContentLoaded", function () {
     themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
   }
 
-  // Functions
-  function updateDate() {
+  // --- I18N Functions ---
+  async function loadTranslations(lang) {
+    try {
+      const response = await fetch(`./languages/${lang}.json`);
+      if (!response.ok) {
+        throw new Error(`Cannot load translation file: ${lang}.json`);
+      }
+      translations = await response.json();
+      applyTranslations();
+      renderTasks(); // Re-render tasks to apply potential language changes in empty state
+      updateTaskCount();
+    } catch (error) {
+      console.error(error);
+      // Fallback to English if the selected language fails to load
+      if (lang !== "en") {
+        loadTranslations("en");
+      }
+    }
+  }
+
+  function applyTranslations() {
+    document.querySelectorAll("[data-i18n-key]").forEach((element) => {
+      const key = element.getAttribute("data-i18n-key");
+      if (translations[key]) {
+        if (element.hasAttribute("placeholder")) {
+          element.setAttribute("placeholder", translations[key]);
+        } else {
+          element.textContent = translations[key];
+        }
+      }
+    });
+  }
+
+  // --- Core Functions ---
+  function initializeApp() {
+    const savedLang = localStorage.getItem("language") || "en";
+    languageSelector.value = savedLang;
+    loadTranslations(savedLang);
+    updateDate(savedLang);
+  }
+
+  function updateDate(lang) {
+    const locale = lang === 'th' ? 'th-TH' : 'en-US';
     const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     };
     const today = new Date();
-    currentDate.textContent = today.toLocaleDateString("en-US", options);
+    currentDate.textContent = today.toLocaleDateString(locale, options);
   }
 
   function addTask() {
     const text = taskInput.value.trim();
     if (text === "") {
-      showNotification("Please enter a task", "warning");
+      showNotification(translations.notificationEnterTask, "warning");
       return;
     }
 
@@ -77,26 +124,13 @@ document.addEventListener("DOMContentLoaded", function () {
     renderTasks();
     taskInput.value = "";
     updateTaskCount();
-    checkEmptyState();
-    showNotification("Task added successfully!", "success");
+    showNotification(translations.notificationTaskAdded, "success");
     animateAddTask(newTask.id);
   }
 
   function renderTasks() {
     taskList.innerHTML = "";
-
-    let filteredTasks = [];
-
-    switch (currentFilter) {
-      case "active":
-        filteredTasks = tasks.filter((task) => !task.completed);
-        break;
-      case "completed":
-        filteredTasks = tasks.filter((task) => task.completed);
-        break;
-      default:
-        filteredTasks = [...tasks];
-    }
+    let filteredTasks = getFilteredTasks();
 
     if (filteredTasks.length === 0) {
       showEmptyState();
@@ -109,27 +143,39 @@ document.addEventListener("DOMContentLoaded", function () {
       taskElement.dataset.id = task.id;
 
       taskElement.innerHTML = `
-                        <div class="task-check">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="task-text">${task.text}</div>
-                        <div class="task-actions">
-                            <button class="task-btn edit"><i class="fas fa-edit"></i></button>
-                            <button class="task-btn delete"><i class="fas fa-trash"></i></button>
-                        </div>
-                    `;
+          <div class="task-check">
+              <i class="fas fa-check"></i>
+          </div>
+          <div class="task-text">${task.text}</div>
+          <div class="task-actions">
+              <button class="task-btn edit"><i class="fas fa-edit"></i></button>
+              <button class="task-btn delete"><i class="fas fa-trash"></i></button>
+          </div>
+      `;
 
       taskList.appendChild(taskElement);
 
-      // Add event listeners to the new elements
-      const checkBtn = taskElement.querySelector(".task-check");
-      const editBtn = taskElement.querySelector(".edit");
-      const deleteBtn = taskElement.querySelector(".delete");
-
-      checkBtn.addEventListener("click", () => toggleTaskComplete(task.id));
-      editBtn.addEventListener("click", () => editTask(task.id));
-      deleteBtn.addEventListener("click", () => deleteTask(task.id));
+      taskElement
+        .querySelector(".task-check")
+        .addEventListener("click", () => toggleTaskComplete(task.id));
+      taskElement
+        .querySelector(".edit")
+        .addEventListener("click", () => editTask(task.id));
+      taskElement
+        .querySelector(".delete")
+        .addEventListener("click", () => deleteTask(task.id));
     });
+  }
+  
+  function getFilteredTasks() {
+    switch (currentFilter) {
+      case "active":
+        return tasks.filter((task) => !task.completed);
+      case "completed":
+        return tasks.filter((task) => task.completed);
+      default:
+        return [...tasks];
+    }
   }
 
   function toggleTaskComplete(id) {
@@ -142,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateTaskCount();
 
     if (tasks[taskIndex].completed) {
-      showNotification("Task completed!", "success");
+      showNotification(translations.notificationTaskCompleted, "success");
       createConfetti();
     }
   }
@@ -153,20 +199,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const taskElement = document.querySelector(`.task[data-id="${id}"]`);
     const taskTextElement = taskElement.querySelector(".task-text");
-
     const currentText = task.text;
     const input = document.createElement("input");
     input.type = "text";
     input.value = currentText;
     input.className = "edit-input";
-    input.style.cssText = `
-                    flex: 1;
-                    padding: 8px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    font-size: 1rem;
-                    outline: none;
-                `;
+    input.style.cssText = `flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; outline: none;`;
 
     taskTextElement.innerHTML = "";
     taskTextElement.appendChild(input);
@@ -178,15 +216,14 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteTask(id);
         return;
       }
-
       task.text = newText;
       saveTasks();
       renderTasks();
-      showNotification("Task updated!", "info");
+      showNotification(translations.notificationTaskUpdated, "info");
     }
 
     input.addEventListener("blur", saveEdit);
-    input.addEventListener("keypress", function (e) {
+    input.addEventListener("keypress", (e) => {
       if (e.key === "Enter") saveEdit();
     });
   }
@@ -196,120 +233,82 @@ document.addEventListener("DOMContentLoaded", function () {
     saveTasks();
     renderTasks();
     updateTaskCount();
-    checkEmptyState();
-    showNotification("Task deleted", "danger");
-
-    // Animation for deletion
-    const taskElement = document.querySelector(`.task[data-id="${id}"]`);
-    if (taskElement) {
-      taskElement.style.transform = "translateX(-100%)";
-      taskElement.style.opacity = "0";
-      setTimeout(() => {
-        renderTasks();
-      }, 300);
-    }
+    showNotification(translations.notificationTaskDeleted, "danger");
   }
 
   function clearCompletedTasks() {
     if (!tasks.some((task) => task.completed)) {
-      showNotification("No completed tasks to clear", "warning");
+      showNotification(translations.notificationNoCompleted, "warning");
       return;
     }
-
     tasks = tasks.filter((task) => !task.completed);
     saveTasks();
     renderTasks();
     updateTaskCount();
-    checkEmptyState();
-    showNotification("Completed tasks cleared", "info");
+    showNotification(translations.notificationCleared, "info");
   }
 
   function addSampleTasks() {
     const sampleTasks = [
-      {
-        id: Date.now(),
-        text: "Complete project presentation",
-        completed: false,
-      },
+      { id: Date.now(), text: "Complete project presentation", completed: false },
       { id: Date.now() + 1, text: "Buy groceries", completed: false },
-      { id: Date.now() + 2, text: "Go for a run", completed: false },
-      {
-        id: Date.now() + 3,
-        text: "Read 30 pages of book",
-        completed: true,
-      },
-      { id: Date.now() + 4, text: "Call mom", completed: false },
     ];
-
     tasks = [...sampleTasks, ...tasks];
     saveTasks();
     renderTasks();
     updateTaskCount();
-    checkEmptyState();
-    showNotification("Sample tasks added!", "success");
+    showNotification(translations.notificationTaskAdded, "success"); // You might want a specific translation for this
   }
 
   function showEmptyState() {
-    if (
-      tasks.length === 0 ||
-      (currentFilter === "active" && !tasks.some((task) => !task.completed)) ||
-      (currentFilter === "completed" && !tasks.some((task) => task.completed))
-    ) {
-      let message = "";
-      let buttonVisible = true;
+    const filteredTasks = getFilteredTasks();
+    if (filteredTasks.length > 0) return;
 
-      if (tasks.length === 0) {
-        message = "No tasks yet<br>Add your first task to get started!";
-      } else if (currentFilter === "active") {
-        message = "No active tasks<br>You've completed everything!";
-        buttonVisible = false;
-      } else if (currentFilter === "completed") {
-        message = "No completed tasks yet<br>Keep going!";
-        buttonVisible = false;
-      }
+    let message = "";
+    let buttonVisible = false;
 
-      emptyState.innerHTML = `
-                        <i class="fas fa-tasks"></i>
-                        <p>${message.split("<br>")[0]}</p>
-                        <p>${message.split("<br>")[1]}</p>
-                        ${
-                          buttonVisible
-                            ? '<button id="addSampleTaskBtn">Add Sample Task</button>'
-                            : ""
-                        }
-                    `;
-
-      taskList.appendChild(emptyState);
-
-      // Only add event listener if button exists
-      const sampleBtn = document.getElementById("addSampleTaskBtn");
-      if (sampleBtn) {
-        sampleBtn.addEventListener("click", addSampleTasks);
-      }
+    if (tasks.length === 0) {
+      message = `${translations.emptyStateNoTasks}<br>${translations.emptyStateHelper}`;
+      buttonVisible = true;
+    } else if (currentFilter === "active") {
+      message = "No active tasks<br>You've completed everything!"; // Can add to JSON
+    } else if (currentFilter === "completed") {
+      message = "No completed tasks yet<br>Keep going!"; // Can add to JSON
     }
-  }
+    
+    emptyState.innerHTML = `
+        <i class="fas fa-tasks"></i>
+        <p>${message.split("<br>")[0]}</p>
+        <p>${message.split("<br>")[1]}</p>
+        ${
+          buttonVisible
+            ? `<button id="addSampleTaskBtn">${translations.addSampleTask}</button>`
+            : ""
+        }
+    `;
+    taskList.innerHTML = "";
+    taskList.appendChild(emptyState);
 
-  function checkEmptyState() {
-    if (
-      (currentFilter === "all" && tasks.length === 0) ||
-      (currentFilter === "active" && !tasks.some((task) => !task.completed)) ||
-      (currentFilter === "completed" && !tasks.some((task) => task.completed))
-    ) {
-      showEmptyState();
+    const sampleBtn = document.getElementById("addSampleTaskBtn");
+    if (sampleBtn) {
+      sampleBtn.addEventListener("click", addSampleTasks);
     }
   }
 
   function updateTaskCount() {
+    if (!translations.taskCountAll) return; // Wait for translations to load
     const activeTasks = tasks.filter((task) => !task.completed).length;
     const totalTasks = tasks.length;
 
     if (currentFilter === "all") {
-      taskCount.textContent = `${activeTasks} active of ${totalTasks} tasks`;
+      taskCount.textContent = translations.taskCountAll
+        .replace("{active}", activeTasks)
+        .replace("{total}", totalTasks);
     } else if (currentFilter === "active") {
-      taskCount.textContent = `${activeTasks} active tasks`;
+      taskCount.textContent = translations.taskCountActive.replace("{count}", activeTasks);
     } else {
       const completedTasks = tasks.filter((task) => task.completed).length;
-      taskCount.textContent = `${completedTasks} completed tasks`;
+      taskCount.textContent = translations.taskCountCompleted.replace("{count}", completedTasks);
     }
   }
 
@@ -320,27 +319,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function showNotification(message, type) {
     notificationText.textContent = message;
     notification.className = "notification";
-
-    // Set color based on type
-    switch (type) {
-      case "success":
-        notification.style.backgroundColor = "var(--success)";
-        break;
-      case "warning":
-        notification.style.backgroundColor = "var(--warning)";
-        break;
-      case "danger":
-        notification.style.backgroundColor = "var(--danger)";
-        break;
-      case "info":
-        notification.style.backgroundColor = "var(--info)";
-        break;
-      default:
-        notification.style.backgroundColor = "var(--primary)";
-    }
-
+    notification.style.backgroundColor = `var(--${type})`;
     notification.classList.add("show");
-
     setTimeout(() => {
       notification.classList.remove("show");
     }, 3000);
@@ -351,7 +331,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (taskElement) {
       taskElement.style.transform = "scale(0.9)";
       taskElement.style.opacity = "0";
-
       setTimeout(() => {
         taskElement.style.transition = "all 0.3s ease";
         taskElement.style.transform = "scale(1)";
@@ -364,31 +343,18 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < 50; i++) {
       const confetti = document.createElement("div");
       confetti.className = "confetti";
-
-      // Random properties
       const size = Math.random() * 10 + 5;
       const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
       const left = Math.random() * 100;
       const animationDuration = Math.random() * 3 + 2;
-
-      confetti.style.width = `${size}px`;
-      confetti.style.height = `${size}px`;
-      confetti.style.backgroundColor = color;
-      confetti.style.left = `${left}%`;
-      confetti.style.animationDuration = `${animationDuration}s`;
-
+      confetti.style.cssText = `width: ${size}px; height: ${size}px; background-color: ${color}; left: ${left}%; animation-duration: ${animationDuration}s;`;
       document.body.appendChild(confetti);
-
-      // Remove after animation
-      setTimeout(() => {
-        confetti.remove();
-      }, animationDuration * 1000);
+      setTimeout(() => confetti.remove(), animationDuration * 1000);
     }
   }
 
   function toggleTheme() {
     document.body.classList.toggle("dark-mode");
-
     if (document.body.classList.contains("dark-mode")) {
       localStorage.setItem("darkMode", "enabled");
       themeToggle.innerHTML = '<i class="fas fa-sun"></i>';

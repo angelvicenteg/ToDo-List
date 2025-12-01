@@ -1,0 +1,21 @@
+{
+    "headerTitle": "Task",
+    "taskInputPlaceholder": "Add a new task...",
+    "filterAll": "All",
+    "filterActive": "Active",
+    "filterCompleted": "Completed",
+    "clearCompleted": "Clear completed",
+    "emptyStateNoTasks": "No tasks yet",
+    "emptyStateHelper": "Add your first task to get started!",
+    "addSampleTask": "Add Sample Task",
+    "notificationTaskAdded": "Task added successfully!",
+    "notificationTaskCompleted": "Task completed!",
+    "notificationTaskUpdated": "Task updated!",
+    "notificationTaskDeleted": "Task deleted",
+    "notificationEnterTask": "Please enter a task",
+    "notificationNoCompleted": "No completed tasks to clear",
+    "notificationCleared": "Completed tasks cleared",
+    "taskCountActive": "{count} active tasks",
+    "taskCountCompleted": "{count} completed tasks",
+    "taskCountAll": "{active} active of {total} tasks"
+  }

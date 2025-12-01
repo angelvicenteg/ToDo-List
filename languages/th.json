@@ -1,0 +1,21 @@
+{
+    "headerTitle": "รายการสิ่งที่ต้องทำ",
+    "taskInputPlaceholder": "เพิ่มงานใหม่...",
+    "filterAll": "ทั้งหมด",
+    "filterActive": "ที่ต้องทำ",
+    "filterCompleted": "ที่ทำเสร็จแล้ว",
+    "clearCompleted": "ลบงานที่เสร็จแล้ว",
+    "emptyStateNoTasks": "ยังไม่มีงาน",
+    "emptyStateHelper": "เริ่มเพิ่มงานแรกของคุณได้เลย!",
+    "addSampleTask": "เพิ่มงานตัวอย่าง",
+    "notificationTaskAdded": "เพิ่มงานเรียบร้อยแล้ว!",
+    "notificationTaskCompleted": "ทำงานเสร็จสิ้น!",
+    "notificationTaskUpdated": "อัปเดตงานแล้ว!",
+    "notificationTaskDeleted": "ลบงานแล้ว",
+    "notificationEnterTask": "กรุณาใส่งานที่ต้องทำ",
+    "notificationNoCompleted": "ไม่มีงานที่เสร็จแล้วให้ลบ",
+    "notificationCleared": "ลบงานที่เสร็จแล้วทั้งหมด",
+    "taskCountActive": "งานที่ต้องทำ {count} รายการ",
+    "taskCountCompleted": "งานที่เสร็จแล้ว {count} รายการ",
+    "taskCountAll": "ที่ต้องทำ {active} จากทั้งหมด {total} รายการ"
+  }

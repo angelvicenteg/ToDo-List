@@ -375,11 +375,11 @@ body {
   }
 }
 
-/* Dark mode toggle */
+/* Theme toggle */
 .theme-toggle {
   position: absolute;
-  top: 0px;
-  right: 0px;
+  top: 10px;
+  right: 10px;
   background: rgba(255, 255, 255, 0.2);
   border: none;
   width: 40px;
@@ -398,6 +398,34 @@ body {
   background: rgba(255, 255, 255, 0.3);
   transform: rotate(30deg);
 }
+
+/* Language Switcher */
+.language-switcher {
+    position: absolute;
+    top: 10px;
+    right: 60px; /* Adjust based on theme toggle button */
+    z-index: 10;
+}
+
+.language-switcher select {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.language-switcher select:focus {
+    outline: none;
+}
+
+.language-switcher select option {
+    background: var(--dark);
+    color: var(--light);
+}
+
 
 /* Dark mode styles */
 body.dark-mode {

